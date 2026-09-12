@@ -1,0 +1,32 @@
+# /pdf - PDF bearbeiten. Rein statisch, kein PHP, kein Serverteil: die Dateien
+# der Besucher werden im Browser verarbeitet und nie hochgeladen.
+
+Options -Indexes
+
+# Zusammen mit der Rewrite-Regel im Webroot-.htaccess macht das /pdf ohne
+# Schraegstrich erreichbar. Ohne DirectorySlash Off schickt mod_dir eine 301
+# auf /pdf/ - und zwar auf http://, weil Apache hinter dem Proxy nichts von
+# TLS weiss. Gleiche Kombination wie in /jump und /karte.
+DirectorySlash Off
+DirectoryIndex index.html
+
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set Referrer-Policy "no-referrer"
+
+  # Alles kommt aus diesem Ordner. blob: braucht die Anwendung an drei Stellen:
+  # pdf.js legt seinen Worker als Blob an, die Vorschaubilder entstehen ueber
+  # canvas.toBlob, und das fertige PDF wird als Blob zum Download gereicht.
+  Header always set Content-Security-Policy "default-src 'none'; script-src 'self' blob:; style-src 'self'; img-src 'self' blob: data:; connect-src 'self' blob:; worker-src 'self' blob:; frame-ancestors 'none'; base-uri 'none'; form-action 'none'"
+</IfModule>
+
+# Die beiden Bibliotheken sind versioniert und aendern sich nicht mehr - der
+# Rest bleibt kurz zwischengespeichert, damit Aenderungen an der Anwendung
+# sofort ankommen.
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresDefault "access plus 10 minutes"
+  <FilesMatch "\.min\.js$">
+    ExpiresDefault "access plus 1 year"
+  </FilesMatch>
+</IfModule>

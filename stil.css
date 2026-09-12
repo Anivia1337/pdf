@@ -1,0 +1,946 @@
+/* PDF bearbeiten - Gestaltung
+   Formensprache: Fluent. Ruhige Grundflaeche, weisse Karten mit feiner Kontur,
+   eine Befehlsleiste mit Sinnbild und Beschriftung, ein Akzentblau fuer alles
+   Auswaehlbare. Kein zweiter Akzent - Rot bleibt dem Loeschen vorbehalten.
+
+   Alle Farben liegen als Token auf :root. Die dunkle Fassung ueberschreibt nur
+   Token, nie einzelne Bausteine: sonst faellt genau der Fall auseinander, in
+   dem der Besucher "System" eingestellt hat und am Wurzelelement gar keine
+   data-theme-Markierung steht. */
+
+:root {
+  color-scheme: light;
+
+  --grund:        #f3f3f3;
+  --karte:        #ffffff;
+  --leiste:       #ffffff;
+  --senke:        #fafafa;
+  --papier:       #ffffff;
+  --papier-rand:  #e3e3e3;
+
+  --text:         #1b1b1b;
+  --text-leise:   #616161;
+  --text-fein:    #8a8a8a;
+  --text-aus:     #a6a6a6;
+
+  --kontur:       rgba(0, 0, 0, .0578);
+  --kontur-klar:  #e0e0e0;
+  --trenner:      #e5e5e5;
+
+  --akzent:       #0078d4;
+  --akzent-hover: #106ebe;
+  --akzent-tief:  #005a9e;
+  --auf-akzent:   #ffffff;
+  --akzent-hauch: #eff6fc;
+  --akzent-rand:  #a9d3f2;
+
+  --warn:         #c42b1c;
+  --warn-hauch:   #fdf3f2;
+
+  --fuellung-hover:  rgba(0, 0, 0, .0373);
+  --fuellung-druck:  rgba(0, 0, 0, .0241);
+
+  --schatten-karte:  0 1px 2px rgba(0, 0, 0, .06);
+  --schatten-hoch:   0 4px 10px rgba(0, 0, 0, .10), 0 1px 3px rgba(0, 0, 0, .07);
+  --schatten-blase:  0 8px 16px rgba(0, 0, 0, .14);
+  --schatten-fenster: 0 32px 64px rgba(0, 0, 0, .24);
+
+  --schrift: 'Segoe UI Variable Text', 'Segoe UI', system-ui, -apple-system,
+             'Helvetica Neue', Arial, sans-serif;
+  --anzeige: 'Segoe UI Variable Display', 'Segoe UI Semibold', 'Segoe UI',
+             system-ui, -apple-system, Arial, sans-serif;
+  --fest: 'Cascadia Mono', Consolas, 'SF Mono', ui-monospace, monospace;
+
+  --eck: 4px;
+  --eck-karte: 8px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+
+    --grund:        #1f1f1f;
+    --karte:        #2b2b2b;
+    --leiste:       #272727;
+    --senke:        #202020;
+    --papier:       #ffffff;
+    --papier-rand:  rgba(0, 0, 0, .2);
+
+    --text:         #ffffff;
+    --text-leise:   #c7c7c7;
+    --text-fein:    #9a9a9a;
+    --text-aus:     #6f6f6f;
+
+    --kontur:       rgba(255, 255, 255, .0698);
+    --kontur-klar:  #3d3d3d;
+    --trenner:      #383838;
+
+    --akzent:       #60cdff;
+    --akzent-hover: #7fd8ff;
+    --akzent-tief:  #4cc2ff;
+    --auf-akzent:   #003a50;
+    --akzent-hauch: #133a4d;
+    --akzent-rand:  #2f6d8a;
+
+    --warn:         #ff99a4;
+    --warn-hauch:   #442726;
+
+    --fuellung-hover:  rgba(255, 255, 255, .0605);
+    --fuellung-druck:  rgba(255, 255, 255, .0419);
+
+    --schatten-karte:  0 1px 2px rgba(0, 0, 0, .3);
+    --schatten-hoch:   0 4px 12px rgba(0, 0, 0, .45);
+    --schatten-blase:  0 8px 16px rgba(0, 0, 0, .5);
+    --schatten-fenster: 0 32px 64px rgba(0, 0, 0, .6);
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --grund:        #1f1f1f;
+  --karte:        #2b2b2b;
+  --leiste:       #272727;
+  --senke:        #202020;
+  --papier:       #ffffff;
+  --papier-rand:  rgba(0, 0, 0, .2);
+
+  --text:         #ffffff;
+  --text-leise:   #c7c7c7;
+  --text-fein:    #9a9a9a;
+  --text-aus:     #6f6f6f;
+
+  --kontur:       rgba(255, 255, 255, .0698);
+  --kontur-klar:  #3d3d3d;
+  --trenner:      #383838;
+
+  --akzent:       #60cdff;
+  --akzent-hover: #7fd8ff;
+  --akzent-tief:  #4cc2ff;
+  --auf-akzent:   #003a50;
+  --akzent-hauch: #133a4d;
+  --akzent-rand:  #2f6d8a;
+
+  --warn:         #ff99a4;
+  --warn-hauch:   #442726;
+
+  --fuellung-hover:  rgba(255, 255, 255, .0605);
+  --fuellung-druck:  rgba(255, 255, 255, .0419);
+
+  --schatten-karte:  0 1px 2px rgba(0, 0, 0, .3);
+  --schatten-hoch:   0 4px 12px rgba(0, 0, 0, .45);
+  --schatten-blase:  0 8px 16px rgba(0, 0, 0, .5);
+  --schatten-fenster: 0 32px 64px rgba(0, 0, 0, .6);
+}
+
+/* --- Grundlage ----------------------------------------------------------- */
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { height: 100%; }
+
+body {
+  margin: 0;
+  display: grid;
+  /* Zeilen ausdruecklich zuweisen: der Quellenstreifen ist ohne Dokumente
+     ausgeblendet und damit kein Rasterelement. Ohne feste Zuweisung ruecken
+     Flaeche und Statusleiste je eine Zeile vor und die Statusleiste bekaeme
+     die Dehnungszeile. */
+  grid-template-rows: auto auto auto minmax(0, 1fr) auto;
+  height: 100dvh;
+  overflow: hidden;
+  font-family: var(--schrift);
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--text);
+  background: var(--grund);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2 { margin: 0; font-family: var(--anzeige); font-weight: 600; text-wrap: balance; }
+p { margin: 0; }
+
+.nurlesbar {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.sinnbilder { position: absolute; width: 0; height: 0; overflow: hidden; }
+
+.sym {
+  width: 16px; height: 16px;
+  flex: 0 0 auto;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+:where(button, input, textarea, [tabindex]):focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 1px;
+  border-radius: var(--eck);
+}
+
+.sprungmarke {
+  position: fixed;
+  top: 8px; left: 8px;
+  z-index: 90;
+  transform: translateY(-200%);
+  padding: 8px 14px;
+  background: var(--akzent);
+  color: var(--auf-akzent);
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: var(--eck);
+}
+.sprungmarke:focus { transform: none; }
+
+kbd {
+  font-family: var(--schrift);
+  font-size: 11px;
+  padding: 1px 5px;
+  border: 1px solid var(--kontur-klar);
+  border-bottom-width: 2px;
+  border-radius: var(--eck);
+  background: var(--senke);
+  color: var(--text-leise);
+  white-space: nowrap;
+}
+
+/* --- Knoepfe -------------------------------------------------------------- */
+
+.knopf {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  background: var(--karte);
+  border: 1px solid var(--kontur-klar);
+  border-radius: var(--eck);
+  padding: 5px 12px;
+  min-height: 32px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color .1s ease, border-color .1s ease;
+}
+.knopf:hover:not(:disabled) { background: var(--fuellung-hover); }
+.knopf:active:not(:disabled) { background: var(--fuellung-druck); }
+.knopf:disabled { color: var(--text-aus); cursor: default; }
+
+.knopf-akzent {
+  background: var(--akzent);
+  border-color: transparent;
+  color: var(--auf-akzent);
+}
+.knopf-akzent:hover:not(:disabled) { background: var(--akzent-hover); }
+.knopf-akzent:active:not(:disabled) { background: var(--akzent-tief); }
+.knopf-akzent:disabled { background: var(--fuellung-hover); border-color: var(--kontur-klar); color: var(--text-aus); }
+
+.knopf-klein { min-height: 28px; padding: 3px 10px; font-size: 13px; }
+.knopf-gross { min-height: 38px; padding: 8px 20px; font-size: 15px; }
+
+.rundknopf {
+  display: grid;
+  place-items: center;
+  width: 32px; height: 32px;
+  padding: 0;
+  font: inherit;
+  font-size: 15px;
+  color: var(--text-leise);
+  background: transparent;
+  border: 0;
+  border-radius: var(--eck);
+  cursor: pointer;
+  transition: background-color .1s ease, color .1s ease;
+}
+.rundknopf:hover { background: var(--fuellung-hover); color: var(--text); }
+.rundknopf:active { background: var(--fuellung-druck); }
+.rundknopf[aria-expanded="true"] { background: var(--akzent-hauch); color: var(--akzent); }
+
+/* --- Titelleiste ---------------------------------------------------------- */
+
+.titelleiste {
+  grid-row: 1;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 0 16px;
+  min-height: 48px;
+  background: var(--leiste);
+  border-bottom: 1px solid var(--trenner);
+}
+
+.marke { display: flex; align-items: center; gap: 10px; }
+.marke-zeichen { width: 26px; height: 26px; }
+.mz-hinten { fill: none; stroke: var(--text-fein); stroke-width: 1.4; }
+.mz-vorn { fill: var(--karte); stroke: var(--akzent); stroke-width: 1.6; }
+.mz-stift { fill: var(--akzent); stroke: none; }
+
+.marke-wort { font-size: 16px; font-weight: 600; letter-spacing: -.005em; }
+
+.titel-rechts { margin-left: auto; display: flex; align-items: center; gap: 6px; }
+
+/* --- Befehlsleiste -------------------------------------------------------- */
+
+.befehlsleiste {
+  grid-row: 2;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 5px 12px;
+  min-height: 44px;
+  background: var(--leiste);
+  border-bottom: 1px solid var(--trenner);
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.befehl {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font: inherit;
+  font-size: 13.5px;
+  color: var(--text);
+  background: transparent;
+  border: 0;
+  border-radius: var(--eck);
+  padding: 6px 10px;
+  min-height: 32px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color .1s ease, color .1s ease;
+}
+.befehl:hover:not(:disabled) { background: var(--fuellung-hover); }
+.befehl:active:not(:disabled) { background: var(--fuellung-druck); }
+.befehl:disabled { color: var(--text-aus); cursor: default; }
+.befehl:disabled .sym { opacity: .5; }
+
+.befehl-betont { color: var(--akzent); font-weight: 600; }
+.befehl-betont:hover:not(:disabled) { background: var(--akzent-hauch); }
+
+.befehl-warn:hover:not(:disabled) { background: var(--warn-hauch); color: var(--warn); }
+
+.trennstrich {
+  flex: 0 0 auto;
+  width: 1px;
+  height: 20px;
+  margin: 0 6px;
+  background: var(--trenner);
+}
+
+.befehle-fluss { flex: 1 1 auto; min-width: 8px; }
+
+.wahlpille {
+  flex: 0 0 auto;
+  font-size: 12.5px;
+  color: var(--akzent);
+  background: var(--akzent-hauch);
+  border: 1px solid var(--akzent-rand);
+  border-radius: 999px;
+  padding: 2px 11px;
+  margin-right: 4px;
+  white-space: nowrap;
+}
+.wahlpille[hidden] { display: none; }
+.wahlpille b { font-variant-numeric: tabular-nums; }
+
+/* --- Quellenstreifen ------------------------------------------------------ */
+
+.quellen {
+  grid-row: 3;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  background: var(--senke);
+  border-bottom: 1px solid var(--trenner);
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+.quellen[hidden] { display: none; }
+
+.quelle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
+  max-width: 280px;
+  padding: 3px 4px 3px 9px;
+  font-size: 12.5px;
+  color: var(--text-leise);
+  background: var(--karte);
+  border: 1px solid var(--kontur-klar);
+  border-radius: var(--eck);
+}
+.quelle-punkt {
+  width: 9px; height: 9px;
+  flex: 0 0 auto;
+  border-radius: 2px;
+  background: var(--fabe, var(--akzent));
+}
+.quelle-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text);
+}
+.quelle-zahl { flex: 0 0 auto; color: var(--text-fein); font-variant-numeric: tabular-nums; }
+.quelle-weg {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 22px; height: 22px;
+  padding: 0;
+  border: 0;
+  border-radius: 3px;
+  background: transparent;
+  color: var(--text-fein);
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+}
+.quelle-weg:hover { background: var(--warn-hauch); color: var(--warn); }
+
+/* --- Seitenflaeche -------------------------------------------------------- */
+
+.flaeche { grid-row: 4; overflow-y: auto; padding: 20px; }
+.flaeche:focus { outline: none; }
+
+.raster {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(174px, 1fr));
+  gap: 16px;
+  align-items: start;
+}
+.raster:empty { display: none; }
+
+/* --- Seitenkarte ---------------------------------------------------------- */
+
+.blatt {
+  position: relative;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--karte);
+  border: 1px solid var(--kontur);
+  border-radius: var(--eck-karte);
+  box-shadow: var(--schatten-karte);
+  cursor: pointer;
+  transition: box-shadow .12s ease, border-color .12s ease, transform .12s ease;
+}
+@media (prefers-reduced-motion: reduce) { .blatt { transition: none; } }
+
+.blatt:hover { box-shadow: var(--schatten-hoch); }
+
+.blatt.gewaehlt {
+  border-color: var(--akzent);
+  box-shadow: 0 0 0 1px var(--akzent), var(--schatten-hoch);
+}
+
+/* Herkunftsstreifen: zeigt, aus welcher Datei die Seite stammt. Traegt
+   Information, ist also keine Zierleiste. */
+/* Kein overflow:hidden auf der Karte - die Einfuegemarke beim Ziehen liegt
+   ausserhalb und wuerde sonst weggeschnitten. Die Rundung tragen stattdessen
+   die beiden Kanten selbst. */
+.blatt-herkunft {
+  height: 3px;
+  background: var(--farbe, var(--akzent));
+  border-radius: 7px 7px 0 0;
+}
+
+.blatt-rahmen {
+  position: relative;
+  aspect-ratio: var(--ar, .7071);
+  background: var(--papier);
+  border-bottom: 1px solid var(--papier-rand);
+  overflow: hidden;
+}
+
+.blatt-bild {
+  position: absolute;
+  left: 50%; top: 50%;
+  width: 100%; height: 100%;
+  object-fit: contain;
+  transform: translate(-50%, -50%) rotate(var(--dreh, 0deg));
+  display: block;
+}
+/* Quergedreht traegt das Bild die aufrechte Groesse, die Drehung besorgt den
+   Rest. Die Prozentwerte beziehen sich auf die passende Achse des Rahmens. */
+.blatt[data-quer="1"] .blatt-bild {
+  width: calc(100% * var(--k));
+  height: calc(100% / var(--k));
+}
+
+.blatt-lade {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 11px;
+  color: #9a9a9a;
+}
+
+/* Auswahlkaestchen oben links - erscheint beim Zeigen, bleibt bei Auswahl */
+.blatt-haken {
+  position: absolute;
+  top: 8px; left: 8px;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  width: 22px; height: 22px;
+  padding: 0;
+  border: 1px solid #8a8a8a;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, .92);
+  color: transparent;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity .12s ease, background-color .12s ease;
+}
+.blatt-haken .sym { width: 14px; height: 14px; }
+.blatt:hover .blatt-haken,
+.blatt:focus-within .blatt-haken { opacity: 1; }
+.blatt-haken:hover { border-color: var(--akzent); }
+.blatt.gewaehlt .blatt-haken {
+  opacity: 1;
+  background: var(--akzent);
+  border-color: var(--akzent);
+  color: var(--auf-akzent);
+}
+
+/* Schnellwerkzeuge am Fuss der Seitenvorschau */
+.griffe {
+  position: absolute;
+  left: 50%;
+  bottom: 8px;
+  z-index: 3;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 1px;
+  padding: 3px;
+  background: rgba(255, 255, 255, .93);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(0, 0, 0, .09);
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .16);
+  opacity: 0;
+  transition: opacity .12s ease;
+}
+.blatt:hover .griffe,
+.blatt:focus-within .griffe { opacity: 1; }
+
+.griff {
+  display: grid;
+  place-items: center;
+  width: 26px; height: 24px;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: #333333;
+  cursor: pointer;
+}
+.griff:hover { background: rgba(0, 0, 0, .07); }
+.griff-weg:hover { background: #c42b1c; color: #ffffff; }
+.griff .sym { width: 15px; height: 15px; }
+
+.blatt-fuss {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 9px;
+  border-radius: 0 0 7px 7px;
+  font-size: 12px;
+  color: var(--text-leise);
+  font-variant-numeric: tabular-nums;
+}
+.blatt-nr { font-weight: 600; color: var(--text); }
+.blatt.gewaehlt .blatt-nr { color: var(--akzent); }
+.blatt-notiz { color: var(--akzent); font-size: 10px; }
+.blatt-mass { margin-left: auto; color: var(--text-fein); }
+.blatt-dreh { color: var(--akzent); }
+
+/* Ziehen und Ablegen */
+.blatt.zieht { opacity: .4; }
+.blatt.ziel-vor::after,
+.blatt.ziel-nach::after {
+  content: "";
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 3px;
+  background: var(--akzent);
+  border-radius: 2px;
+  z-index: 5;
+}
+.blatt.ziel-vor::after { left: -9px; }
+.blatt.ziel-nach::after { right: -9px; }
+
+/* --- Leerbild ------------------------------------------------------------- */
+
+.leerbild { display: grid; place-items: center; min-height: 100%; padding: 12px; }
+.leerbild[hidden] { display: none; }
+
+.leerbild-feld {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+  max-width: 46ch;
+  padding: 44px 40px;
+  background: var(--karte);
+  border: 1px dashed var(--kontur-klar);
+  border-radius: 12px;
+}
+.leerbild-zeichen {
+  width: 40px; height: 40px;
+  fill: none;
+  stroke: var(--akzent);
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  margin-bottom: 2px;
+}
+.leerbild-titel { font-size: 22px; }
+.leerbild-text { color: var(--text-leise); line-height: 1.55; }
+.leerbild-fein { font-size: 12px; color: var(--text-fein); }
+
+/* --- Statusleiste --------------------------------------------------------- */
+
+.statusleiste {
+  grid-row: 5;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0 16px;
+  min-height: 28px;
+  background: var(--leiste);
+  border-top: 1px solid var(--trenner);
+  font-size: 12px;
+  color: var(--text-leise);
+  font-variant-numeric: tabular-nums;
+}
+.status-fluss { flex: 1; }
+.status-punkt { color: var(--text-aus); }
+.status-hinweis { color: var(--text-fein); }
+.status-meldung { color: var(--akzent); font-weight: 600; }
+.status-meldung.warnung { color: var(--warn); }
+.status-hinweis[hidden] { display: none; }
+
+/* --- Hilfeblase ----------------------------------------------------------- */
+
+.hilfe-blase {
+  position: fixed;
+  top: 52px;
+  right: 14px;
+  z-index: 70;
+  width: min(330px, calc(100vw - 28px));
+  padding: 16px 18px;
+  background: var(--karte);
+  border: 1px solid var(--kontur-klar);
+  border-radius: var(--eck-karte);
+  box-shadow: var(--schatten-blase);
+}
+.hilfe-blase[hidden] { display: none; }
+
+.blase-titel { font-size: 15px; margin-bottom: 10px; }
+
+.tasten {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 6px 12px;
+  margin: 0;
+  font-size: 12.5px;
+  color: var(--text-leise);
+}
+.tasten dt { display: flex; align-items: center; gap: 3px; }
+.tasten dd { margin: 0; align-self: center; }
+
+.blase-fuss {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--trenner);
+  font-size: 12px;
+  color: var(--text-fein);
+  line-height: 1.5;
+}
+
+/* --- Dateien ablegen ------------------------------------------------------ */
+
+.ablegeflaeche {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  padding: 26px;
+  background: color-mix(in srgb, var(--grund) 84%, transparent);
+  backdrop-filter: blur(3px);
+}
+.ablegeflaeche[hidden] { display: none; }
+.ablege-rahmen {
+  border: 2px dashed var(--akzent);
+  border-radius: 12px;
+  padding: 58px 84px;
+  font-family: var(--anzeige);
+  font-size: 19px;
+  font-weight: 600;
+  color: var(--akzent);
+  background: var(--akzent-hauch);
+}
+
+/* --- Dialog --------------------------------------------------------------- */
+
+.dialog {
+  border: 1px solid var(--kontur-klar);
+  border-radius: var(--eck-karte);
+  background: var(--karte);
+  color: var(--text);
+  padding: 0;
+  max-width: 400px;
+  width: calc(100% - 32px);
+  box-shadow: var(--schatten-fenster);
+}
+.dialog::backdrop { background: rgba(0, 0, 0, .4); }
+
+.dialog-inhalt { display: flex; flex-direction: column; gap: 18px; padding: 22px; }
+.dialog-titel { font-size: 20px; }
+
+.feld { display: flex; flex-direction: column; gap: 6px; }
+.feld-schild { font-size: 12.5px; color: var(--text-leise); }
+.feld-eingabe {
+  display: flex;
+  align-items: center;
+  background: var(--senke);
+  border: 1px solid var(--kontur-klar);
+  border-bottom-color: var(--text-fein);
+  border-radius: var(--eck);
+  overflow: hidden;
+}
+.feld-eingabe:focus-within { border-bottom: 2px solid var(--akzent); }
+.feld-eingabe input {
+  font: inherit;
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  padding: 7px 10px;
+}
+.feld-eingabe input:focus { outline: none; }
+.feld-endung { font-size: 13px; color: var(--text-fein); padding-right: 10px; }
+
+.schalter { display: flex; align-items: center; gap: 9px; font-size: 13.5px; cursor: pointer; }
+.schalter input { accent-color: var(--akzent); width: 16px; height: 16px; }
+.schalter:has(input:disabled) { color: var(--text-aus); cursor: default; }
+
+.dialog-fein {
+  font-size: 12.5px;
+  color: var(--text-fein);
+  border-top: 1px solid var(--trenner);
+  padding-top: 14px;
+}
+.dialog-knoepfe { display: flex; gap: 8px; }
+.dialog-knoepfe .knopf { flex: 1; justify-content: center; }
+
+/* --- Bearbeitungsfenster -------------------------------------------------- */
+
+.lupe {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  max-width: none;
+  max-height: none;
+  width: 100%;
+  height: 100%;
+  background: var(--grund);
+  color: var(--text);
+}
+.lupe::backdrop { background: rgba(0, 0, 0, .5); }
+.lupe[open] { display: grid; grid-template-rows: auto auto minmax(0, 1fr) auto; }
+
+.lupe-kopf {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 8px 14px;
+  min-height: 48px;
+  background: var(--leiste);
+  border-bottom: 1px solid var(--trenner);
+  flex-wrap: wrap;
+}
+.lupe-titel { font-size: 14px; color: var(--text-leise); }
+.lupe-titel b { color: var(--text); }
+.lupe-quelle {
+  font-size: 12.5px;
+  color: var(--text-fein);
+  max-width: 26ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding-left: 10px;
+  border-left: 3px solid var(--farbe, var(--akzent));
+}
+.lupe-schluss { margin-left: auto; display: flex; gap: 7px; }
+
+.werkzeuge {
+  display: flex;
+  gap: 2px;
+  padding: 2px;
+  background: var(--senke);
+  border: 1px solid var(--kontur-klar);
+  border-radius: 6px;
+}
+.wz {
+  font: inherit;
+  font-size: 13px;
+  padding: 5px 13px;
+  border: 0;
+  border-radius: var(--eck);
+  background: transparent;
+  color: var(--text-leise);
+  cursor: pointer;
+  transition: background-color .1s ease, color .1s ease;
+}
+.wz:hover { background: var(--fuellung-hover); color: var(--text); }
+.wz[aria-pressed="true"] { background: var(--akzent); color: var(--auf-akzent); font-weight: 600; }
+
+.lupe-optionen {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  padding: 7px 14px;
+  min-height: 44px;
+  background: var(--senke);
+  border-bottom: 1px solid var(--trenner);
+  flex-wrap: wrap;
+}
+.opt-gruppe { display: flex; align-items: center; gap: 9px; }
+.opt-gruppe[hidden] { display: none; }
+.opt-rechts { margin-left: auto; gap: 4px; }
+.opt-schild { font-size: 12.5px; color: var(--text-leise); }
+.opt-wert { font-size: 12.5px; color: var(--text-fein); font-variant-numeric: tabular-nums; min-width: 5ch; text-align: center; }
+.lupe-optionen input[type="range"] { accent-color: var(--akzent); width: 128px; }
+
+.farbwahl { display: flex; gap: 5px; }
+.farbe {
+  width: 24px; height: 24px;
+  border: 1px solid var(--kontur-klar);
+  border-radius: var(--eck);
+  cursor: pointer;
+  padding: 0;
+}
+.farbe[aria-checked="true"] {
+  border-color: var(--akzent);
+  box-shadow: 0 0 0 2px var(--akzent-hauch), inset 0 0 0 1.5px var(--karte);
+}
+
+.lupe-buehne { overflow: auto; display: grid; place-items: center; padding: 22px; }
+.lupe-blatt {
+  position: relative;
+  background: #ffffff;
+  border-radius: 2px;
+  box-shadow: var(--schatten-hoch);
+  line-height: 0;
+}
+#lupeCanvas { display: block; touch-action: none; border-radius: 2px; }
+.lupe-blatt[data-wz="text"] #lupeCanvas { cursor: text; }
+.lupe-blatt[data-wz="stift"] #lupeCanvas,
+.lupe-blatt[data-wz="marker"] #lupeCanvas,
+.lupe-blatt[data-wz="weiss"] #lupeCanvas { cursor: crosshair; }
+
+.lupe-eingabe {
+  position: absolute;
+  z-index: 4;
+  font-family: Helvetica, Arial, sans-serif;
+  line-height: 1.25;
+  color: #000;
+  background: rgba(255, 255, 255, .94);
+  border: 1px solid var(--akzent);
+  border-radius: 2px;
+  padding: 1px 3px;
+  margin: 0;
+  resize: none;
+  overflow: hidden;
+  min-width: 3ch;
+  white-space: pre;
+}
+.lupe-eingabe[hidden] { display: none; }
+
+.lupe-fuss {
+  padding: 7px 14px;
+  background: var(--leiste);
+  border-top: 1px solid var(--trenner);
+  font-size: 12.5px;
+  color: var(--text-fein);
+}
+
+/* --- Arbeitsanzeige ------------------------------------------------------- */
+
+.arbeit {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: grid;
+  place-items: center;
+  background: color-mix(in srgb, var(--grund) 80%, transparent);
+}
+.arbeit[hidden] { display: none; }
+.arbeit-kasten {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: min(320px, 78vw);
+  padding: 22px;
+  background: var(--karte);
+  border: 1px solid var(--kontur-klar);
+  border-radius: var(--eck-karte);
+  box-shadow: var(--schatten-fenster);
+}
+.arbeit-text { font-size: 13.5px; color: var(--text); }
+.arbeit-balken { height: 3px; background: var(--fuellung-hover); border-radius: 2px; overflow: hidden; }
+.arbeit-balken i { display: block; height: 100%; width: 0; background: var(--akzent); transition: width .16s ease; }
+
+/* --- Enge Fenster --------------------------------------------------------- */
+
+/* Gestaffeltes Einklappen wie in einer Befehlsleiste ueblich: zuerst verlieren
+   die selteneren Befehle ihre Beschriftung, dann die auf die Auswahl bezogenen,
+   zuletzt der Hauptbefehl. Der Text bleibt jeweils im title und im Vorlesenamen,
+   die Leiste bleibt also vollstaendig bedienbar. */
+@media (max-width: 1460px) {
+  .befehl[data-stufe="2"] span { display: none; }
+  .befehl[data-stufe="2"] { padding: 6px 8px; }
+}
+
+@media (max-width: 1080px) {
+  .befehl[data-stufe="1"] span { display: none; }
+  .befehl[data-stufe="1"] { padding: 6px 8px; }
+}
+
+@media (max-width: 760px) {
+  .titelleiste { padding: 0 10px; gap: 10px; }
+  .marke-wort { font-size: 15px; }
+  .befehl-betont span { display: none; }
+  .befehl-betont { padding: 6px 8px; }
+  .flaeche { padding: 14px; }
+  .raster { grid-template-columns: repeat(auto-fill, minmax(136px, 1fr)); gap: 12px; }
+  .griffe, .blatt-haken { opacity: 1; }
+  .status-hinweis { display: none; }
+  .lupe-optionen { gap: 14px; }
+  .lupe-optionen input[type="range"] { width: 92px; }
+  #speichernText { display: none; }
+}
+
+@media (hover: none) {
+  .griffe, .blatt-haken { opacity: 1; }
+}

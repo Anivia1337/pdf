@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PDF Editor</title>
+<meta name="description" content="Combine PDF files, rotate and reorder pages, and annotate them - entirely in your browser.">
+<meta name="color-scheme" content="light dark">
+<link rel="stylesheet" href="/pdf/stil.css">
+</head>
+<body>
+
+<a class="sprungmarke" href="#flaeche">Skip to pages</a>
+
+<svg class="sinnbilder" aria-hidden="true" focusable="false">
+  <symbol id="s-hinzu" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M12 18v-6M9 15h6"/></symbol>
+  <symbol id="s-leer" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></symbol>
+  <symbol id="s-links" viewBox="0 0 24 24"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></symbol>
+  <symbol id="s-rechts" viewBox="0 0 24 24"><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></symbol>
+  <symbol id="s-stift" viewBox="0 0 24 24"><path d="M17 3a2.83 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></symbol>
+  <symbol id="s-doppeln" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></symbol>
+  <symbol id="s-weg" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M10 11v6M14 11v6"/></symbol>
+  <symbol id="s-alledrehen" viewBox="0 0 24 24"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/></symbol>
+  <symbol id="s-umkehren" viewBox="0 0 24 24"><path d="M7 4v16M7 20l-3.5-3.5M7 20l3.5-3.5"/><path d="M17 20V4M17 4l-3.5 3.5M17 4l3.5 3.5"/></symbol>
+  <symbol id="s-ordnen" viewBox="0 0 24 24"><path d="M3 6h14M3 12h9M3 18h5"/></symbol>
+  <symbol id="s-zurueck" viewBox="0 0 24 24"><path d="M9 14L4 9l5-5"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/></symbol>
+  <symbol id="s-wahl" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></symbol>
+  <symbol id="s-speichern" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></symbol>
+  <symbol id="s-hilfe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5"/><path d="M9.2 9.2a3 3 0 0 1 5.8 1c0 2-2.9 2.6-2.9 4"/><path d="M12 17.6h.01"/></symbol>
+  <symbol id="s-thema" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3v18a9 9 0 0 0 0-18z" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="s-haken" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7" stroke-width="2.6"/></symbol>
+</svg>
+
+<header class="titelleiste">
+  <div class="marke">
+    <svg class="marke-zeichen" viewBox="0 0 28 28" aria-hidden="true" focusable="false">
+      <rect class="mz-hinten" x="5.5" y="3.5" width="14.5" height="19.5" rx="1.6"/>
+      <rect class="mz-vorn" x="9" y="6" width="14.5" height="19.5" rx="1.6"/>
+      <path class="mz-stift" d="M20.4 9.6l2.2 2.2-6.6 6.6-2.9.7.7-2.9z"/>
+    </svg>
+    <h1 class="marke-wort">PDF Editor</h1>
+  </div>
+
+  <div class="titel-rechts">
+    <button type="button" class="rundknopf" id="btnHilfe" aria-expanded="false" aria-haspopup="dialog" title="Keyboard shortcuts and notes">
+      <svg class="sym" aria-hidden="true"><use href="#s-hilfe"/></svg><span class="nurlesbar">Help</span>
+    </button>
+    <button type="button" class="rundknopf" id="btnThema" title="Light or dark appearance">
+      <svg class="sym" aria-hidden="true"><use href="#s-thema"/></svg><span class="nurlesbar">Switch appearance</span>
+    </button>
+    <button type="button" class="knopf knopf-akzent" id="btnSpeichern" disabled>
+      <svg class="sym" aria-hidden="true"><use href="#s-speichern"/></svg>
+      <span id="speichernText">Save PDF</span>
+    </button>
+  </div>
+</header>
+
+<div class="befehlsleiste" role="toolbar" aria-label="Tools">
+  <button type="button" class="befehl befehl-betont" id="btnDateien">
+    <svg class="sym" aria-hidden="true"><use href="#s-hinzu"/></svg><span>Add files</span>
+  </button>
+
+  <span class="trennstrich" aria-hidden="true"></span>
+
+  <button type="button" class="befehl" id="btnDrehLinks" data-stufe="1" disabled title="Rotate the selected pages 90° left">
+    <svg class="sym" aria-hidden="true"><use href="#s-links"/></svg><span>Left</span>
+  </button>
+  <button type="button" class="befehl" id="btnDrehRechts" data-stufe="1" disabled title="Rotate the selected pages 90° right">
+    <svg class="sym" aria-hidden="true"><use href="#s-rechts"/></svg><span>Right</span>
+  </button>
+  <button type="button" class="befehl" id="btnBearbeiten" data-stufe="1" disabled title="Annotate and draw on the selected page">
+    <svg class="sym" aria-hidden="true"><use href="#s-stift"/></svg><span>Edit</span>
+  </button>
+  <button type="button" class="befehl" id="btnDoppeln" data-stufe="1" disabled title="Duplicate the selected pages">
+    <svg class="sym" aria-hidden="true"><use href="#s-doppeln"/></svg><span>Duplicate</span>
+  </button>
+  <button type="button" class="befehl befehl-warn" id="btnLoeschen" data-stufe="1" disabled title="Remove the selected pages">
+    <svg class="sym" aria-hidden="true"><use href="#s-weg"/></svg><span>Delete</span>
+  </button>
+
+  <span class="trennstrich" aria-hidden="true"></span>
+
+  <button type="button" class="befehl" id="btnLeerseite" data-stufe="2" title="Append a blank page at the end">
+    <svg class="sym" aria-hidden="true"><use href="#s-leer"/></svg><span>Blank page</span>
+  </button>
+  <button type="button" class="befehl" id="btnAlleDrehen" data-stufe="2" disabled title="Rotate every page 90° right">
+    <svg class="sym" aria-hidden="true"><use href="#s-alledrehen"/></svg><span>Rotate all</span>
+  </button>
+  <button type="button" class="befehl" id="btnUmkehren" data-stufe="2" disabled title="Reverse the page order">
+    <svg class="sym" aria-hidden="true"><use href="#s-umkehren"/></svg><span>Reverse</span>
+  </button>
+  <button type="button" class="befehl" id="btnNachQuelle" data-stufe="2" disabled title="Sort by document and original page order">
+    <svg class="sym" aria-hidden="true"><use href="#s-ordnen"/></svg><span>By document</span>
+  </button>
+
+  <span class="trennstrich" aria-hidden="true"></span>
+
+  <button type="button" class="befehl" id="btnZurueck" data-stufe="2" disabled title="Undo the last step (Ctrl+Z)">
+    <svg class="sym" aria-hidden="true"><use href="#s-zurueck"/></svg><span>Undo</span>
+  </button>
+
+  <span class="befehle-fluss"></span>
+
+  <span class="wahlpille" id="wahlpille" hidden><b id="wahlAnzahl">0</b> <span id="wahlWort">pages selected</span></span>
+  <button type="button" class="befehl" id="btnAlleWaehlen" data-stufe="2" disabled title="Select all pages (Ctrl+A)">
+    <svg class="sym" aria-hidden="true"><use href="#s-wahl"/></svg><span>Select all</span>
+  </button>
+</div>
+
+<div class="quellen" id="quellen" hidden></div>
+
+<main class="flaeche" id="flaeche" tabindex="-1">
+  <div class="leerbild" id="leerbild">
+    <div class="leerbild-feld">
+      <svg class="leerbild-zeichen" viewBox="0 0 24 24" aria-hidden="true"><use href="#s-hinzu"/></svg>
+      <h2 class="leerbild-titel">Drop your PDF files here</h2>
+      <p class="leerbild-text">Then rotate, reorder and annotate any page you like, and save the whole thing as a single PDF.</p>
+      <button type="button" class="knopf knopf-akzent knopf-gross" id="btnDateien2">Choose files</button>
+      <p class="leerbild-fein">PDF, JPG, PNG, WebP and GIF &middot; Your files stay on your computer</p>
+    </div>
+  </div>
+  <div class="raster" id="raster" role="list" aria-label="Pages"></div>
+</main>
+
+<footer class="statusleiste">
+  <span id="statSeiten">No pages</span>
+  <span class="status-punkt" aria-hidden="true">&middot;</span>
+  <span id="statDoks">No documents</span>
+  <span class="status-punkt" aria-hidden="true">&middot;</span>
+  <span id="statFormat">&ndash;</span>
+  <span class="status-fluss"></span>
+  <span class="status-hinweis" id="statHinweis">Drag pages to reorder them</span>
+  <span class="status-meldung" id="meldung" role="status" aria-live="polite"></span>
+</footer>
+
+<input type="file" id="dateiFeld" accept=".pdf,application/pdf,image/*" multiple hidden>
+
+<div class="ablegeflaeche" id="ablegen" hidden><div class="ablege-rahmen">Drop to add</div></div>
+
+<div class="hilfe-blase" id="hilfeBlase" role="dialog" aria-label="Keyboard shortcuts" hidden>
+  <h2 class="blase-titel">Keyboard shortcuts</h2>
+  <dl class="tasten">
+    <dt><kbd>Click</kbd></dt><dd>select a page</dd>
+    <dt><kbd>Ctrl</kbd>+<kbd>Click</kbd></dt><dd>add to the selection</dd>
+    <dt><kbd>Shift</kbd>+<kbd>Click</kbd></dt><dd>select a range</dd>
+    <dt><kbd>Double-click</kbd></dt><dd>edit a page</dd>
+    <dt><kbd>R</kbd></dt><dd>rotate right</dd>
+    <dt><kbd>Shift</kbd>+<kbd>R</kbd></dt><dd>rotate left</dd>
+    <dt><kbd>Del</kbd></dt><dd>delete pages</dd>
+    <dt><kbd>Ctrl</kbd>+<kbd>Z</kbd></dt><dd>undo</dd>
+    <dt><kbd>Ctrl</kbd>+<kbd>A</kbd></dt><dd>select all</dd>
+    <dt><kbd>Ctrl</kbd>+<kbd>&#8592;</kbd>&#8202;/&#8202;<kbd>&#8594;</kbd></dt><dd>move a page</dd>
+  </dl>
+  <p class="blase-fuss">Nothing is uploaded. Every file is processed in your browser and never leaves your computer.</p>
+</div>
+
+<dialog class="dialog" id="speichernDialog">
+  <form method="dialog" class="dialog-inhalt" id="speichernForm">
+    <h2 class="dialog-titel">Save PDF</h2>
+    <label class="feld">
+      <span class="feld-schild">File name</span>
+      <span class="feld-eingabe">
+        <input type="text" id="dateiName" value="combined" required>
+        <span class="feld-endung">.pdf</span>
+      </span>
+    </label>
+    <label class="schalter">
+      <input type="checkbox" id="nurAuswahl">
+      <span>Only the selected pages (<span id="dlgAnzahl">0</span>)</span>
+    </label>
+    <p class="dialog-fein" id="dlgUmfang">&ndash;</p>
+    <div class="dialog-knoepfe">
+      <button type="submit" class="knopf knopf-akzent" id="dlgOk">Save</button>
+      <button type="button" class="knopf" id="dlgAbbruch">Cancel</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog class="lupe" id="lupe" aria-label="Edit page">
+  <div class="lupe-kopf">
+    <span class="lupe-titel">Page <b id="lupeNr">1</b></span>
+    <span class="lupe-quelle" id="lupeQuelle"></span>
+
+    <div class="werkzeuge" role="toolbar" aria-label="Tools">
+      <button type="button" class="wz" data-wz="wahl" aria-pressed="true">Select</button>
+      <button type="button" class="wz" data-wz="text" aria-pressed="false">Text</button>
+      <button type="button" class="wz" data-wz="stift" aria-pressed="false">Pen</button>
+      <button type="button" class="wz" data-wz="marker" aria-pressed="false">Highlight</button>
+      <button type="button" class="wz" data-wz="weiss" aria-pressed="false">Whiteout</button>
+    </div>
+
+    <div class="lupe-schluss">
+      <button type="button" class="knopf knopf-klein" id="lupeZurueck" disabled>Undo</button>
+      <button type="button" class="knopf knopf-klein" id="lupeAbbruch">Discard</button>
+      <button type="button" class="knopf knopf-klein knopf-akzent" id="lupeOk">Apply</button>
+    </div>
+  </div>
+
+  <div class="lupe-optionen" id="lupeOptionen">
+    <div class="opt-gruppe" data-fuer="text stift marker">
+      <span class="opt-schild">Color</span>
+      <div class="farbwahl" id="farbwahl" role="radiogroup" aria-label="Color"></div>
+    </div>
+    <div class="opt-gruppe" data-fuer="text">
+      <span class="opt-schild">Font size</span>
+      <input type="range" id="optGrad" min="6" max="72" step="1" value="14">
+      <output class="opt-wert" id="optGradWert">14 pt</output>
+    </div>
+    <div class="opt-gruppe" data-fuer="stift">
+      <span class="opt-schild">Stroke width</span>
+      <input type="range" id="optStaerke" min="1" max="20" step="1" value="3">
+      <output class="opt-wert" id="optStaerkeWert">3 pt</output>
+    </div>
+    <div class="opt-gruppe opt-rechts">
+      <button type="button" class="rundknopf" id="zoomRaus" title="Zoom out">&minus;</button>
+      <output class="opt-wert" id="zoomWert">100 %</output>
+      <button type="button" class="rundknopf" id="zoomRein" title="Zoom in">+</button>
+    </div>
+  </div>
+
+  <div class="lupe-buehne" id="lupeBuehne">
+    <div class="lupe-blatt" id="lupeBlatt">
+      <canvas id="lupeCanvas"></canvas>
+      <textarea class="lupe-eingabe" id="lupeEingabe" hidden spellcheck="false" rows="1"></textarea>
+    </div>
+  </div>
+
+  <p class="lupe-fuss" id="lupeFuss">Pick a tool and draw on the page. <kbd>Del</kbd> removes the selected item, <kbd>Esc</kbd> closes this window.</p>
+</dialog>
+
+<div class="arbeit" id="arbeit" hidden>
+  <div class="arbeit-kasten">
+    <p class="arbeit-text" id="arbeitText">Working</p>
+    <div class="arbeit-balken"><i id="arbeitBalken"></i></div>
+  </div>
+</div>
+
+<script src="/pdf/vendor/pdf.min.js"></script>
+<script src="/pdf/vendor/pdf-lib.min.js"></script>
+<script src="/pdf/app.js"></script>
+</body>
+</html>
